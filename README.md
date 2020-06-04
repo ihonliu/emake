@@ -1,5 +1,12 @@
 ## Preface
 
+Forked from https://github.com/skywind3000/emake
+This version is a simple modification for python3
+Functions are `NOT` tested.
+
+从 https://github.com/skywind3000/emake fork而来
+本版本只是针对python3的简单修改，功能`没有`进行测试
+
 GNU Make 太麻烦？Makefile 写起来太臃肿？头文件依赖生成搞不定？多核同时编译太麻烦？Emake 帮你解决这些问题：
 
 - 使用简单：设定源文件，设定编译参数和输出目标就行了，emake为你打点好一切。
