@@ -14,6 +14,8 @@
 # 2010.11.04   skywind   new 'export' to export .def, .lib for windll
 # 2010.11.27   skywind   fixed link sequence with -Xlink -( -)
 # 2012.03.26   skywind   multiprocess building system, speed up
+# 2012.05.31   skywind   support macOS -dynamiclib, replace popen with
+# 						 subprocess module
 # 2012.08.18   skywind   new 'flnk' to project
 # 2012.09.09   skywind   new system condition config, optimized
 # 2013.12.19   skywind   new $(target) config
