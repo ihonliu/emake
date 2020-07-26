@@ -30,12 +30,16 @@
 # 2020.07.18   ihonliu   new: add uninstall option, and remove update
 #                        from github function because I do not have
 #                        github.io release page
+# 2020.07.26   ihonliu   specify encoding explicitly in file.open() 
 #
 #======================================================================
 import sys, time, os
 import configparser
 
 
+ver='3.7.1'
+modifyDate='Jul.26 2020'
+versionInfo='emake {} {} %s'.format(ver, modifyDate)
 #----------------------------------------------------------------------
 # preprocessor: C/C++/Java 预处理器
 #----------------------------------------------------------------------
@@ -146,7 +150,7 @@ class preprocessor(object):
 		content = ''
 		del heads[:]
 		try:
-			fp = open(source, "r")
+			fp = open(source, "r", encoding="utf-8")
 		except:
 			return ''
 		
@@ -2655,7 +2659,7 @@ class dependence (object):
 		path = os.path.split(self._depname)[0]
 		if not os.path.exists(path):
 			self.parser.coremake.mkdir(path)
-		fp = open(self._depname, 'w')
+		fp = open(self._depname, 'w', encoding="utf-8")
 		names = self._depinfo.keys()
 		sorted(names)
 		for src in names:
@@ -2920,7 +2924,7 @@ def install():
 		print('error: install must under unix')
 		return -2
 	try:
-		f1 = open(filepath, 'r')
+		f1 = open(filepath, 'r',encoding="utf-8")
 	except:
 		print('error: cannot read "%s"'%filepath)
 		return -3
@@ -2935,12 +2939,12 @@ def install():
 		print('/usr/local/bin/emake already exists, you should delete it')
 		return -7
 	try:
-		f2 = open(name2, 'w')
+		f2 = open(name2, 'w',encoding="utf-8")
 	except:
 		print('error: cannot write "%s"'%name2)
 		return -4
 	try:
-		f3 = open(name3, 'w')
+		f3 = open(name3, 'w',encoding="utf-8")
 	except:
 		print( 'error: cannot write "%s"'%name3)
 		f2.close()
@@ -2994,7 +2998,7 @@ def __update_file(name, content):
 		return 0
 	__updated_files[name] = 1
 	try: 
-		fp = open(name, 'r')
+		fp = open(name, 'r', encoding="utf-8")
 		source = fp.read()
 		fp.close()
 	except:
@@ -3003,7 +3007,7 @@ def __update_file(name, content):
 		print('%s up-to-date'%name)
 		return 0
 	try:
-		fp = open(name, 'w')
+		fp = open(name, 'w', encoding="utf-8")
 		fp.write(content)
 		fp.close()
 	except:
@@ -3015,6 +3019,7 @@ def __update_file(name, content):
 def getemake():
 	print('this is ihonliu edited custom version, does not supprt update from internet right now')
 	return 0
+	"""
 	import urllib
 	url1 = 'http://skywind3000.github.io/emake/emake.py'
 	url2 = 'http://www.skywind.me/php/getemake.php'
@@ -3039,6 +3044,7 @@ def getemake():
 			print('ok')
 			return content
 	return ''
+	"""
 
 def update():
 	content = getemake()
@@ -3063,10 +3069,10 @@ def update():
 	return 0
 
 def help():
-	print("Emake 3.6.9 Dec.24 2017")
+	print(versionInfo%'') # print("Emake 3.6.9 Dec.24 2017")
 	print("By providing a completely new way to build your projects, Emake")
-	print( "is a easy tool which controls the generation of executables and other")
-	print( "non-source files of a program from the program's source files. ")
+	print("is a easy tool which controls the generation of executables and other")
+	print("non-source files of a program from the program's source files. ")
 	return 0
 
 
@@ -3140,7 +3146,7 @@ def main(argv = None):
 		inipath = os.path.abspath(inipath)
 
 	if len(argv) <= 1:
-		version = '(emake 3.6.9 Dec.21 2017 %s)'%sys.platform
+		version = '(%s)'%versionInfo%sys.platform
 		print('usage: "emake.py [option] srcfile" %s'%version                   )
 		print('options  :  -b | -build      build project'                      )
 		print('            -c | -compile    compile project'                    )
@@ -3356,7 +3362,7 @@ def main(argv = None):
 		retval = make.call(' '.join(argv[3:]))
 	elif cmd in ('o', '-o', 'out', '-out'):
 		make.open(name)
-		make.info('outname');
+		make.info('outname')
 	elif cmd in ('dirty', '-dirty'):
 		make.open(name)
 		make.info('dirty')
