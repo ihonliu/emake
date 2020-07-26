@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #======================================================================
 #
-# emake.py - emake version 3.6.9
+# emake.py - emake version 3.7.1
 #
 # history of this file:
 # 2009.08.20   skywind   create this file
@@ -26,6 +26,10 @@
 # 2016.09.02   skywind   more environ variables rather than $(target)
 # 2017.08.16   skywind   new: cflag, cxxflag, sflag, mflag, mmflag
 # 2017.12.20   skywind   new: --abs=1 to tell gcc to print fullpath 
+# 2020.06.04   ihonliu	 migrate to python3
+# 2020.07.18   ihonliu   new: add uninstall option, and remove update
+#                        from github function because I do not have
+#                        github.io release page
 #
 #======================================================================
 import sys, time, os
@@ -1894,6 +1898,7 @@ class coremake(object):
 		workdir = os.path.dirname(self._main)
 		savecwd = os.getcwd()
 		for script in scripts:
+			print(script)
 			if savecwd != workdir: 
 				os.chdir(workdir)
 			os.system(script)
@@ -2717,7 +2722,7 @@ class emake (object):
 			return -1
 		parser = self.parser
 		self.coremake.init(makefile, parser.out, parser.mode, parser.int)
-		#print('open', parser.out, parser.mode, parser.int)
+		print('open', parser.out, parser.mode, parser.int)
 		for src in self.parser:
 			obj = self.parser[src]
 			opt = self.parser.optdict[src]
@@ -2948,9 +2953,36 @@ def install():
 	os.system('chmod 755 /usr/local/bin/emake')
 	os.system('chown root /usr/local/bin/emake.py 2> /dev/null')
 	os.system('chown root /usr/local/bin/emake 2> /dev/null')
-	print( 'install completed. you can uninstall by deleting the following two files:')
+	print( 'install completed. you can uninstall by using -uninstall option or deleting the following two files directly:')
 	print( '/usr/local/bin/emake.py')
 	print( '/usr/local/bin/emake')
+	return 0
+
+def uninstall():
+	deleDuration = 0.1
+	name0 = '/usr/local/bin/emake.py'
+	name1 = '/usr/local/bin/emake'
+	bExist0 = os.path.exists(name0)
+	bExist1 = os.path.exists(name1)
+	inV = input('Are you sure to uninstall emake? \nNotice: You cannot use this command with double ampersand(&&), because \
+deletion is executed about {} second later after confirmation.\n'.format(deleDuration))
+	if inV.lower() not in ['y']:
+		print('uninstallation cancelled')
+		return -1
+	# print('/usr/local/bin/emake.py already exists, we are going to delete it')
+	if bExist0 and bExist1:
+		print("emake is going to remove '{}' and '{}'".format(name0,name1))
+	else:
+		if bExist0:
+			print("emake going to remove '{}'".format(name0))
+		if bExist1:
+			print("emake going to remove '{}'".format(name1))
+	# import subprocess to execute deletion
+	import subprocess
+	if bExist0:
+		subprocess.Popen("python3 -c \"import os,time; time.sleep({:.1f}); os.remove('{}');\"".format(deleDuration,name0),shell=True)
+	if bExist1:
+		subprocess.Popen("python3 -c \"import os,time; time.sleep({:.1f}); os.remove('{}');\"".format(deleDuration,name1),shell=True)
 	return 0
 
 __updated_files = {}
@@ -2981,7 +3013,9 @@ def __update_file(name, content):
 	return 1
 
 def getemake():
-	import urllib2
+	print('this is ihonliu edited custom version, does not supprt update from internet right now')
+	return 0
+	import urllib
 	url1 = 'http://skywind3000.github.io/emake/emake.py'
 	url2 = 'http://www.skywind.me/php/getemake.php'
 	success = True
@@ -2991,8 +3025,8 @@ def getemake():
 		sys.stdout.flush();
 		success = True
 		try:
-			content = urllib2.urlopen(url).read()
-		except(urllib2.URLError, e):
+			content = urllib.urlopen(url).read()
+		except(urllib.URLError, e):
 			success = False
 			print('failed ')
 			print(e)
@@ -3119,6 +3153,8 @@ def main(argv = None):
 			print('            -g | -cygwin     cygwin execute')
 			print('            -s | -cshell     cygwin shell'  )
 		print('            -i | -install    install emake on unix' )
+		if sys.platform[:3] != 'win':
+			print('            -uninstall       uninstall emake on unix' )
 		print('            -u | -update     update itself from github')
 		print('            -h | -help       show help page'        )
 		return 0
@@ -3139,6 +3175,11 @@ def main(argv = None):
 		print('gcc:', os.path.join(dirhome, make.config.exename['gcc']))
 		print('name:', make.config.name.keys())
 		print('target:', make.config.target)
+		# print('platform:', sys.platform[:3])
+		return 0
+
+	if argv[1] == '-uninstall':
+		uninstall()
 		return 0
 
 	cmd, name = 'build', ''
